@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Order Form</title>
+	
+</head>
+<body>
+	<div style="margin: auto;width: 500px;border: 1px black solid;">
+		{% if ord_dataa %}
+		<h1 style="text-align:center;">Edit order</h1>
+		{% else %}
+		<h1 style="text-align:center;">Add order</h1>
+		{% endif %}
+		<hr>
+		<form class="form" action="/data_stored" method="POST" accept-charset="utf-8">
+			{% csrf_token %}
+			<div style="margin: auto;width:50%;padding: 10px;"> 
+				<label>Customer Name:
+					<select id="select1" class="form-control" name="customer_id" required  style="margin-left:5px;width:105px;">
+						{% for x in cust_data %}
+						<option value="{{x.id}}">{{x.first_name}} {{x.last_name}}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div style="margin: auto;width:50%;padding: 10px;"> 
+					<label>Product: </label> <select class="form-control" name="product_id" id="product"  required style="margin-left:60px;width:105px;">
+						{% for x in prod_data %}
+						<option value="{{x.id}}" id="product">{{x.name}}</option>
+						{% endfor %}
+					</select>
+				</div>
+				<div style="margin: auto;width:50%;padding:10px;"> 
+					<label id="label_price">Price</label> 
+					<select class="form-control" id="price" name="unit_price" required style="margin-left:80px; width: 100px;">
+						{% for x in prod_data %}
+						<option value="{{x.unit_price}}" id="product">{{x.unit_price}}</option>
+						{% endfor %}	
+					</select>	
+				</div>
+				<div style="margin: auto;width:50%;padding:10px;"> 
+					<label>Quantity</label> <input type="number" id="qty" class="form-control" name="qty" required style="margin-left:58px;width:100px;" oninput="total()">
+					<script type="text/javascript">
+						$("#qty").keypress(function() {
+							return (/[0123456789,.]/.test(String.fromCharCode(Event.which) ))
+						});
+					</script>
+					<script type="text/javascript">
+						function total() {
+							var quantity = parseFloat(document.getElementById('qty').value);
+							var price = parseFloat((document.getElementById('price').value));
+							var total = price * quantity;
+
+							document.getElementById('total_price').innerHTML = total;
+							document.getElementById('total_price').value = total;
+						}
+					</script>
+				</div>
+				<div style="margin: auto;width:50%;padding:10px;"> 
+					<label>Total Price</label> <input type="number" name="form_contrl" id="total_price"  name="total_price" style="margin-left:45px;width:100px;border:0px;" readonly>
+				</div>
+				<div style="margin: auto;width:50%;padding:30px;"> 
+					<input type="submit"  id="place_order"class="btn btn-info" value="Place Order" style="margin-left:20px;">
+					<input type="submit"  class="btn btn-danger" value="Cancel" style="margin-left:20px;">
+					<script type="text/javascript">
+						$(document).ready(function()
+						{
+							$("#place_order").click(function()
+							{
+								$.ajax(
+								{
+									url:'',
+									type: 'get',
+									data:{
+										button_text: $(this).text()
+									},
+									success: function(response)
+									{
+										$('#place_order').text(response.seconds)
+									}
+
+								});
+
+							});
+
+						});
+					</script>
+				</div>
+			</form>
+		</div>
+		<div class="margin:auto; width:50%;">
+			{% if messages %}
+			<ul class="messages" style="text-align: center; color:green;height: 200px;font-size: 50px;">
+				{% for message in messages %}
+				<li {% if message.tags %} class="{{ message.tags }}"{% endif %} style="list-style-type:none;">{{ message }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+		</div>
+	</body>
+	</html> 	

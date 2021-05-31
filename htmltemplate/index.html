@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title> Order Management System</title>
+</head>
+<body>
+  {% if ord_dataa %}
+  {% for x in ord_dataa %}
+  <div style="margin: auto;width: 500px;border: 1px black solid;">
+    <h1 style="text-align:center;">Edit order</h1>
+    <hr>
+    <form class="form" action="/data_updated/{{x.id}}" method="POST" accept-charset="utf-8">
+      {% csrf_token %}
+      <div style="margin: auto;width:50%;"> 
+        <label>Customer Name:
+          <input type="number" id="customer_id" class="form-control" name="customer_id" placeholder="{{x.customer_id.first_name}} {{x.customer_id.last_name}}" value="{{x.customer_id}}" readonly style="width: 100px;">
+        </div>
+        <div style="margin:auto;width:50%;padding:10px;"> 
+          <label>Product: </label> 
+          <input type="number" id="customer_id" class="form-control" name="product_id" value="{{x.product_id}}" required style="margin-left:55px;width:100px;" value="{{x.product_id}}" placeholder="{{x.product_id.name}}" readonly>
+        </div>
+        <div style="margin: auto;width:50%;padding:10px;"> 
+          <label id="label_price">Price</label> <input type="number" id="price" class="form-control" name="unit_price" required style="margin-left:75px;width:100px;border: 0px;outline:0;" placeholder="{{x.unit_price}}" value="{{x.unit_price}}" readonly>
+        </div>
+        <div style="margin: auto;width:50%;padding:10px;"> 
+          <label>Quantity</label> <input type="number" id="qty" class="form-control" name="qty" value="{{x.qty}}" required style="margin-left:54px;width:100px;" oninput="total()">
+          <script type="text/javascript">
+            $("#qty").keypress(function() {
+              return (/[0123456789,.]/.test(String.fromCharCode(Event.which) ))
+            });
+          </script>
+          <script type="text/javascript">
+            function total() {
+              var quantity = parseInt(document.getElementById('qty').value);
+              var price = parseInt(document.getElementById('price').value);
+              var total = price * quantity;
+
+              document.getElementById('total_price').innerHTML = total;
+              document.getElementById('total_price').value = total;
+            }
+          </script>
+        </div>
+        <div style="margin: auto;width:50%;padding:10px;"> 
+          <label>Total Price</label> <input type="number" name="form_contrl" id="total_price"  name="total_price" style="margin-left:45px;width:100px;border:0px;" readonly>
+        </div>
+        <div style="margin: auto;width:50%;padding:30px;"> 
+          <input type="submit"  class="btn btn-info" value="Place Order" style="margin-left:20px;">
+          <input type="submit"  class="btn btn-danger" value="Cancel" style="margin-left:20px;">
+        </div>
+      </form>
+    </div>
+    <div class="margin:auto; width:50%;">
+      {% if messages %}
+      <ul class="messages" style="text-align: center; color:green;height: 200px;font-size: 50px;">
+        {% for message in messages %}
+        <li {% if message.tags %} class="{{ message.tags }}"{% endif %} style="list-style-type:none;">{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+
+    {% endfor %}
+    {% else %}
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <table class="table" id="myTable">
+      <ul class="list-group list-inline text-right" style="padding: 20px;">
+        <li><form class="Order_search" method="GET" action="" >
+          <input class="Order_search" type="text" name="search" id="myInput" placeholder="Search..." onkeyup="searchFun()" 
+          style="border-radius:20px;outline: none;"> 
+        </form>
+        <script type="text/javascript">
+          const searchFun = () =>{
+            let filter = document.getElementById('myInput').value.toUpperCase();
+            let myTable = document.getElementById('myTable');
+            let tr = myTable.getElementsByTagName('tr');
+            for(var i =0; i<tr.length; i++)
+            {
+              let td= tr[i].getElementsByTagName('td')[1];
+              if(td)
+              {
+                let textValue = td.textContent || td.innerHTML;
+                if (textValue.toUpperCase().indexOf(filter) >-1) 
+                {
+                  tr[i].style.display ="";
+                }else{
+                  tr[i].style.display = 'none';
+                }
+              }
+            } 
+          }
+        </script>
+      </li>
+      <li>
+        <a href="/create" class="btn btn-info" style="border-radius:10px">Add Order</a>
+      </li>
+
+    </ul>
+
+    <thead class="">
+      <tr>
+        <th>Id</th>
+        <th>Customer</th>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Unit Price</th>
+        <th>Total Price</th>
+        <th>Option</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for x in ord_data %}
+      <tr>
+        <td>{{x.id}}</td>
+        <td>{{x.customer_id.first_name}} {{x.customer_id.last_name}}</td>
+        <td>{{x.product_id.name}}</td>
+        <td>{{x.qty}}</td>
+        <td>{{x.unit_price}}</td>
+        <td>{{x.total_price}}</td>
+        <td>
+          <a href="/edit_data/{{x.id}}" class="btn btn-info">Edit</a>&nbsp;
+          <a href="/data_deleted/{{x.id}}" class="btn btn-danger">Delete</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </body>
+  </html>
